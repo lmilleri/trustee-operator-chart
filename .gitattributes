@@ -1,0 +1,2 @@
+# Force files with the .tpl extension to be classified as YAML
+*.tpl linguist-language=YAML
