@@ -1,0 +1,111 @@
+{{- if .Values.trusteeConfig.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Values.trusteeConfig.name }}-cleanup
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    "helm.sh/hook": pre-delete
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+  labels:
+    app.kubernetes.io/name: trustee-operator-cleanup
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  backoffLimit: 3
+  template:
+    metadata:
+      name: {{ .Values.trusteeConfig.name }}-cleanup
+    spec:
+      restartPolicy: OnFailure
+      serviceAccountName: {{ .Values.cleanupJob.serviceAccountName | default "trustee-cleanup" }}
+      containers:
+      - name: cleanup-trusteeconfig
+        image: {{ .Values.cleanupJob.image | default "quay.io/openshift/origin-cli:latest" }}
+        command:
+        - /bin/bash
+        - -c
+        - |
+          set -e
+          echo "Starting TrusteeConfig cleanup..."
+
+          # Determine which CLI tool to use (oc or kubectl)
+          if command -v oc &> /dev/null; then
+            CLI="oc"
+          elif command -v kubectl &> /dev/null; then
+            CLI="kubectl"
+          else
+            echo "ERROR: Neither oc nor kubectl found in container"
+            exit 1
+          fi
+
+          echo "Using CLI tool: $CLI"
+
+          # Delete TrusteeConfig if it exists
+          if $CLI get trusteeconfig {{ .Values.trusteeConfig.name }} -n {{ .Values.namespace.name }} >/dev/null 2>&1; then
+            echo "Deleting TrusteeConfig {{ .Values.trusteeConfig.name }}..."
+            $CLI delete trusteeconfig {{ .Values.trusteeConfig.name }} -n {{ .Values.namespace.name }} --wait=false
+
+            # Wait for TrusteeConfig to be deleted
+            echo "Waiting for TrusteeConfig to be fully deleted..."
+            MAX_ATTEMPTS=60
+            SLEEP_INTERVAL=2
+            attempt=0
+
+            while [ $attempt -lt $MAX_ATTEMPTS ]; do
+              if ! $CLI get trusteeconfig {{ .Values.trusteeConfig.name }} -n {{ .Values.namespace.name }} >/dev/null 2>&1; then
+                echo "TrusteeConfig successfully deleted!"
+                break
+              fi
+
+              attempt=$((attempt + 1))
+              echo "Attempt $attempt/$MAX_ATTEMPTS: Waiting for deletion..."
+              sleep $SLEEP_INTERVAL
+            done
+
+            if [ $attempt -ge $MAX_ATTEMPTS ]; then
+              echo "WARNING: TrusteeConfig deletion timed out, but continuing..."
+            fi
+          else
+            echo "TrusteeConfig {{ .Values.trusteeConfig.name }} not found, nothing to clean up"
+          fi
+
+          # Check for and delete any remaining KbsConfig resources
+          echo "Checking for remaining KbsConfig resources..."
+          KBSCONFIGS=$($CLI get kbsconfig -n {{ .Values.namespace.name }} -o name 2>/dev/null || true)
+
+          if [ -n "$KBSCONFIGS" ]; then
+            echo "Found KbsConfig resources, deleting them..."
+            for kbsconfig in $KBSCONFIGS; do
+              echo "Deleting $kbsconfig..."
+              $CLI delete $kbsconfig -n {{ .Values.namespace.name }} --wait=false || true
+            done
+
+            # Wait for KbsConfigs to be deleted
+            echo "Waiting for KbsConfig resources to be fully deleted..."
+            MAX_ATTEMPTS=30
+            attempt=0
+
+            while [ $attempt -lt $MAX_ATTEMPTS ]; do
+              REMAINING=$($CLI get kbsconfig -n {{ .Values.namespace.name }} -o name 2>/dev/null | wc -l)
+              if [ "$REMAINING" -eq "0" ]; then
+                echo "All KbsConfig resources successfully deleted!"
+                break
+              fi
+
+              attempt=$((attempt + 1))
+              echo "Attempt $attempt/$MAX_ATTEMPTS: $REMAINING KbsConfig(s) remaining..."
+              sleep $SLEEP_INTERVAL
+            done
+
+            if [ $attempt -ge $MAX_ATTEMPTS ]; then
+              echo "WARNING: KbsConfig deletion timed out, but continuing..."
+            fi
+          else
+            echo "No KbsConfig resources found"
+          fi
+
+          echo "Cleanup completed successfully!"
+          exit 0
+{{- end }}

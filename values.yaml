@@ -110,3 +110,10 @@ crdWaitJob:
   serviceAccountName: trustee-crd-waiter
   # Image must have either 'oc' or 'kubectl' CLI installed
   image: quay.io/openshift/origin-cli:latest
+
+# Cleanup Job configuration
+# This job ensures proper cleanup of TrusteeConfig and child resources on uninstall
+cleanupJob:
+  serviceAccountName: trustee-cleanup
+  # Image must have either 'oc' or 'kubectl' CLI installed
+  image: quay.io/openshift/origin-cli:latest
