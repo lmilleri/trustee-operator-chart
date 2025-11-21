@@ -1,0 +1,17 @@
+apiVersion: v2
+name: trustee-operator
+description: A Helm chart for deploying the Trustee Operator on OpenShift/Kubernetes
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - trustee
+  - confidential-containers
+  - attestation
+  - kbs
+  - operator
+maintainers:
+  - name: Trustee Operator Team
+home: https://github.com/confidential-containers/trustee-operator
+sources:
+  - https://github.com/confidential-containers/trustee-operator

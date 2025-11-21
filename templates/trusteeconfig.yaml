@@ -1,0 +1,16 @@
+{{- if .Values.trusteeConfig.enabled }}
+apiVersion: confidentialcontainers.org/v1alpha1
+kind: TrusteeConfig
+metadata:
+  name: {{ .Values.trusteeConfig.name }}
+  namespace: {{ .Values.namespace.name }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": before-hook-creation
+  labels:
+    {{- toYaml .Values.trusteeConfig.labels | nindent 4 }}
+spec:
+  profileType: {{ .Values.trusteeConfig.spec.profileType }}
+  kbsServiceType: {{ .Values.trusteeConfig.spec.kbsServiceType }}
+{{- end }}

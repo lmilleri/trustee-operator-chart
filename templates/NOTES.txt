@@ -1,0 +1,35 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+The Trustee Operator has been deployed with the following configuration:
+
+- Namespace: {{ .Values.namespace.name }}
+{{- if .Values.catalogSource.enabled }}
+- CatalogSource: {{ .Values.catalogSource.name }} (namespace: {{ .Values.catalogSource.namespace }})
+{{- end }}
+{{- if .Values.trusteeConfig.enabled }}
+- TrusteeConfig: {{ .Values.trusteeConfig.name }}
+  - Profile Type: {{ .Values.trusteeConfig.spec.profileType }}
+  - KBS Service Type: {{ .Values.trusteeConfig.spec.kbsServiceType }}
+{{- end }}
+
+To check the operator installation status:
+
+  oc get csv -n {{ .Values.namespace.name }}
+
+To view operator logs:
+
+  oc logs -n {{ .Values.namespace.name }} deployment/trustee-operator-controller-manager
+
+To check TrusteeConfig status:
+
+  oc get trusteeconfig -n {{ .Values.namespace.name }}
+  oc describe trusteeconfig {{ .Values.trusteeConfig.name }} -n {{ .Values.namespace.name }}
+
+To verify KBS deployment:
+
+  oc get pods -n {{ .Values.namespace.name }}
+  oc get svc -n {{ .Values.namespace.name }}
+
+For more information, visit: https://github.com/confidential-containers/trustee-operator
