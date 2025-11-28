@@ -1,10 +1,8 @@
-{{- if .Values.operatorGroup.enabled }}
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: {{ .Values.operatorGroup.name }}
+  name: trustee-operator-group
   namespace: {{ .Values.namespace.name }}
 spec:
   targetNamespaces:
   - {{ .Values.namespace.name }}
-{{- end }}

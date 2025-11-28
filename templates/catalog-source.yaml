@@ -1,14 +1,12 @@
-{{- if .Values.catalogSource.enabled }}
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-  name: {{ .Values.catalogSource.name }}
-  namespace: {{ .Values.catalogSource.namespace }}
+  name: trustee-operator-catalog
+  namespace: openshift-marketplace
 spec:
-  displayName: {{ .Values.catalogSource.displayName }}
-  sourceType: {{ .Values.catalogSource.sourceType }}
-  image: {{ .Values.catalogSource.image | quote }}
+  displayName: "Trustee Operator Catalog"
+  sourceType: grpc
+  image: "quay.io/redhat-user-workloads/ose-osc-tenant/trustee-test-fbc:1.0.0-1763473348"
   updateStrategy:
     registryPoll:
-      interval: {{ .Values.catalogSource.updateStrategy.registryPoll.interval }}
-{{- end }}
+      interval: 5m

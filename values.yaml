@@ -5,42 +5,14 @@
 # Namespace configuration
 namespace:
   name: trustee-operator-system
-  create: true
-
-# CatalogSource configuration
-catalogSource:
-  enabled: true
-  name: trustee-operator-catalog
-  namespace: openshift-marketplace
-  displayName: "Trustee Operator Catalog"
-  sourceType: grpc
-  image: "quay.io/redhat-user-workloads/ose-osc-tenant/trustee-test-fbc:1.0.0-1763473348"
-  updateStrategy:
-    registryPoll:
-      interval: 5m
-
-# OperatorGroup configuration
-operatorGroup:
-  enabled: true
-  name: trustee-operator-group
-
-# Subscription configuration
-subscription:
-  enabled: true
-  name: trustee-operator
-  channel: stable
-  installPlanApproval: Automatic
-  # Source should match catalogSource.name
-  source: trustee-operator-catalog
-  sourceNamespace: openshift-marketplace
 
 # TrusteeConfig CR configuration
 trusteeConfig:
   enabled: true
-  name: trusteeconfig-sample
+  name: trusteeconfig
   labels:
     app.kubernetes.io/name: trusteeconfig
-    app.kubernetes.io/instance: trusteeconfig-sample
+    app.kubernetes.io/instance: trusteeconfig
     app.kubernetes.io/part-of: trustee-operator
     app.kubernetes.io/managed-by: kustomize
     app.kubernetes.io/created-by: trustee-operator
@@ -51,65 +23,6 @@ trusteeConfig:
     # KBS service type defines how the Key Broker Service is exposed
     # Options: ClusterIP, NodePort, LoadBalancer
     kbsServiceType: ClusterIP
-
-# ImageDigestMirrorSet configuration
-# Configures image mirrors for OpenShift clusters based on digest (SHA256)
-# This redirects image pulls from registry.redhat.io to accessible mirrors
-imageDigestMirrorSet:
-  enabled: true
-  name: trustee-registry-digest
-  mirrors:
-    - source: registry.redhat.io/confidential-compute-attestation-tech-preview/trustee-rhel9
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee
-    - source: registry.redhat.io/confidential-compute-attestation-tech-preview/trustee-rhel9-operator
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator
-    - source: registry.redhat.io/confidential-compute-attestation-tech-preview/trustee-operator-bundle
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator-bundle
-    - source: registry.redhat.io/build-of-trustee/trustee-rhel9
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee
-    - source: registry.redhat.io/build-of-trustee/trustee-rhel9-operator
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator
-    - source: registry.redhat.io/build-of-trustee/trustee-operator-bundle
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator-bundle
-
-# ImageTagMirrorSet configuration
-# Configures image mirrors for OpenShift clusters based on tags
-# This redirects image pulls from registry.redhat.io to accessible mirrors
-imageTagMirrorSet:
-  enabled: true
-  name: trustee-registry-tag
-  mirrors:
-    - source: registry.redhat.io/confidential-compute-attestation-tech-preview/trustee-rhel9
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee
-    - source: registry.redhat.io/confidential-compute-attestation-tech-preview/trustee-rhel9-operator
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator
-    - source: registry.redhat.io/confidential-compute-attestation-tech-preview/trustee-operator-bundle
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator-bundle
-    - source: registry.redhat.io/build-of-trustee/trustee-rhel9
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee
-    - source: registry.redhat.io/build-of-trustee/trustee-rhel9-operator
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator
-    - source: registry.redhat.io/build-of-trustee/trustee-operator-bundle
-      mirrorRegistries:
-        - quay.io/redhat-user-workloads/ose-osc-tenant/trustee/trustee-operator-bundle
-
-# CRD Wait Job configuration
-# This job ensures the TrusteeConfig CRD exists before creating the CR
-crdWaitJob:
-  serviceAccountName: trustee-crd-waiter
-  # Image must have either 'oc' or 'kubectl' CLI installed
-  image: quay.io/openshift/origin-cli:latest
 
 # Cleanup Job configuration
 # This job ensures proper cleanup of TrusteeConfig and child resources on uninstall

@@ -5,14 +5,10 @@ Your release is named {{ .Release.Name }}.
 The Trustee Operator has been deployed with the following configuration:
 
 - Namespace: {{ .Values.namespace.name }}
-{{- if .Values.catalogSource.enabled }}
-- CatalogSource: {{ .Values.catalogSource.name }} (namespace: {{ .Values.catalogSource.namespace }})
-{{- end }}
-{{- if .Values.trusteeConfig.enabled }}
+- CatalogSource: trustee-operator-catalog (namespace: openshift-marketplace)
 - TrusteeConfig: {{ .Values.trusteeConfig.name }}
   - Profile Type: {{ .Values.trusteeConfig.spec.profileType }}
   - KBS Service Type: {{ .Values.trusteeConfig.spec.kbsServiceType }}
-{{- end }}
 
 To check the operator installation status:
 

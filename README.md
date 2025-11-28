@@ -40,53 +40,14 @@ The following table lists the configurable parameters of the Trustee Operator ch
 | Parameter | Description | Default |
 |-----------|-------------|---------|
 | `namespace.name` | Name of the namespace to deploy to | `trustee-operator-system` |
-| `namespace.create` | Whether to create the namespace | `true` |
-
-### CatalogSource Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `catalogSource.enabled` | Enable CatalogSource creation | `true` |
-| `catalogSource.name` | Name of the CatalogSource | `trustee-operator-catalog` |
-| `catalogSource.namespace` | Namespace for CatalogSource | `openshift-marketplace` |
-| `catalogSource.displayName` | Display name for the catalog | `Trustee Operator Catalog` |
-| `catalogSource.sourceType` | Source type | `grpc` |
-| `catalogSource.image` | Catalog image | `quay.io/redhat-user-workloads/ose-osc-tenant/trustee-test-fbc:1.0.0-1763473348` |
-| `catalogSource.updateStrategy.registryPoll.interval` | Poll interval for updates | `5m` |
-
-### OperatorGroup Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `operatorGroup.enabled` | Enable OperatorGroup creation | `true` |
-| `operatorGroup.name` | Name of the OperatorGroup | `trustee-operator-group` |
-
-### Subscription Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `subscription.enabled` | Enable Subscription creation | `true` |
-| `subscription.name` | Name of the Subscription | `trustee-operator` |
-| `subscription.channel` | Subscription channel | `stable` |
-| `subscription.installPlanApproval` | Install plan approval mode | `Automatic` |
-| `subscription.source` | CatalogSource name | `trustee-operator-catalog` |
-| `subscription.sourceNamespace` | CatalogSource namespace | `openshift-marketplace` |
 
 ### TrusteeConfig Configuration
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `trusteeConfig.enabled` | Enable TrusteeConfig creation | `true` |
-| `trusteeConfig.name` | Name of the TrusteeConfig CR | `trusteeconfig-sample` |
+| `trusteeConfig.name` | Name of the TrusteeConfig CR | `trusteeconfig` |
 | `trusteeConfig.spec.profileType` | Attestation profile type (`Permissive` or `Restrictive`) | `Permissive` |
 | `trusteeConfig.spec.kbsServiceType` | KBS service type (`ClusterIP`, `NodePort`, or `LoadBalancer`) | `ClusterIP` |
-
-### CRD Wait Job Configuration
-
-| Parameter | Description | Default |
-|-----------|-------------|---------|
-| `crdWaitJob.serviceAccountName` | ServiceAccount for the CRD wait job | `trustee-crd-waiter` |
-| `crdWaitJob.image` | Container image for the wait job (must have `oc` or `kubectl` CLI installed) | `quay.io/openshift/origin-cli:latest` |
 
 ## Customizing Values
 
@@ -111,12 +72,10 @@ namespace:
   name: my-trustee-namespace
 
 trusteeConfig:
+  name: my-trusteeconfig
   spec:
     profileType: Restrictive
     kbsServiceType: LoadBalancer
-
-catalogSource:
-  image: "quay.io/my-org/trustee-fbc:latest"
 ```
 
 ## Deployment Order

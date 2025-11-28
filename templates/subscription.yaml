@@ -1,13 +1,11 @@
-{{- if .Values.subscription.enabled }}
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: {{ .Values.subscription.name }}
+  name: trustee-operator
   namespace: {{ .Values.namespace.name }}
 spec:
-  channel: {{ .Values.subscription.channel }}
-  installPlanApproval: {{ .Values.subscription.installPlanApproval }}
-  name: {{ .Values.subscription.name }}
-  source: {{ .Values.subscription.source }}
-  sourceNamespace: {{ .Values.subscription.sourceNamespace }}
-{{- end }}
+  channel: stable
+  installPlanApproval: Automatic
+  name: trustee-operator
+  source: trustee-operator-catalog
+  sourceNamespace: openshift-marketplace

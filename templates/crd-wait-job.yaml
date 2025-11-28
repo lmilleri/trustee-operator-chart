@@ -1,4 +1,3 @@
-{{- if .Values.trusteeConfig.enabled }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -19,10 +18,10 @@ spec:
       name: {{ .Values.trusteeConfig.name }}-crd-wait
     spec:
       restartPolicy: OnFailure
-      serviceAccountName: {{ .Values.crdWaitJob.serviceAccountName | default "default" }}
+      serviceAccountName: trustee-crd-waiter
       containers:
       - name: wait-for-crd
-        image: {{ .Values.crdWaitJob.image | default "quay.io/openshift/origin-cli:latest" }}
+        image: "quay.io/openshift/origin-cli:latest"
         command:
         - /bin/bash
         - -c
@@ -61,4 +60,3 @@ spec:
           echo "ERROR: TrusteeConfig CRD did not become available after $((MAX_ATTEMPTS * SLEEP_INTERVAL)) seconds"
           echo "Check the operator installation status with: oc get csv -n {{ .Values.namespace.name }}"
           exit 1
-{{- end }}

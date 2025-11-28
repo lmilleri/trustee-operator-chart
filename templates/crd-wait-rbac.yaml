@@ -1,9 +1,8 @@
-{{- if .Values.trusteeConfig.enabled }}
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: {{ .Values.crdWaitJob.serviceAccountName | default "trustee-crd-waiter" }}
+  name: trustee-crd-waiter
   namespace: {{ .Values.namespace.name }}
   annotations:
     "helm.sh/hook": post-install,post-upgrade
@@ -49,6 +48,5 @@ roleRef:
   name: {{ .Release.Name }}-crd-viewer
 subjects:
 - kind: ServiceAccount
-  name: {{ .Values.crdWaitJob.serviceAccountName | default "trustee-crd-waiter" }}
+  name: trustee-crd-waiter
   namespace: {{ .Values.namespace.name }}
-{{- end }}
